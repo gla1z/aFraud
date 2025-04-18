@@ -1,0 +1,14 @@
+CREATE TABLE incidents (
+    id SERIAL PRIMARY KEY,
+    transaction_id VARCHAR(255),
+	user_id VARCHAR(255),
+	amount FLOAT,
+	country VARCHAR(255),
+    merchant_id VARCHAR(255),
+    timestamp TIMESTAMP,
+	risk_score INTEGER,
+	ml_score FLOAT,
+	rules_triggered JSON,
+    final_decision BOOLEAN,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
