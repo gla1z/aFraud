@@ -1,4 +1,7 @@
 from typing import Dict
+from rules_loader import load_rules
+
+rules = load_rules()
 
 def apply_rules(tx: Dict) -> Dict:
     """
@@ -6,29 +9,22 @@ def apply_rules(tx: Dict) -> Dict:
     Возвращает словарь с флагом риска и объяснением.
     """
 
-    risk_score = 0
-    reasons = []
+    total_score = 0
+    triggered = []
 
-    # Пример 1: Сумма больше 5000
-    if tx["amount"] > 5000:
-        risk_score += 40
-        reasons.append("High amount")
+    for rule in sorted(rules, key=lambda r: r.priority):
+        if not rule.enabled:
+            continue
 
-    # Пример 2: Страна не из доверенного списка
-    trusted_countries = {"RU", "BY", "KZ"}
-    if tx["country"] not in trusted_countries:
-        risk_score += 30
-        reasons.append("Untrusted country")
-    
-    # Пример 3: Пустой merchant_id
-    if not tx.get("merchant_id"):
-        risk_score += 20
-        reasons.append("Missing merchant ID")
-    
-    is_fraud = risk_score >= 50
+        try:
+            if eval(rule.condition, {}, tx):
+                triggered.append(rule.id)
+                total_score += rule.risk_score
+        except Exception as e:
+            print(f"Rule {rule.id} failed: {e}")
 
     return {
-        "risk_score": risk_score,
-        "is_fraud": is_fraud,
-        "reasons": reasons
+        "risk_score": total_score,
+        "is_fraud": total_score > 0,
+        "reasons": triggered
     }

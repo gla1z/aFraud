@@ -1,0 +1,21 @@
+rules:
+  - id: high_amount
+    description: "Сумма транзакции превышает 10000"
+    condition: "amount > 10000"
+    risk_score: 50
+    enabled: true
+    priority: 1
+
+  - id: risky_country
+    description: "Транзакция из страны с высоким риском"
+    condition: "country in ['RU', 'IR', 'KP']"
+    risk_score: 70
+    enabled: true
+    priority: 2
+
+  - id: new_user
+    description: "Пользователь новый (user_id начинается с 'new_')"
+    condition: "user_id.startswith('new_')"
+    risk_score: 30
+    enabled: false
+    priority: 3
